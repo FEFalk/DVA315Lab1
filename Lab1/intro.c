@@ -3,6 +3,8 @@
 #include <string.h>
 
 int myFunction(int number);
+int helloMoonOnRepeat();
+int helloWorldOnRepeat();
 
 int main(void)
 {
@@ -10,13 +12,13 @@ int main(void)
 	HANDLE mailSlot;
 	HANDLE hFile;
 
-	threadCreate(myFunction, 5);
+	
+	threadCreate(helloWorldOnRepeat);
 
 	mailSlot = mailslotCreate(SlotName);
 	hFile = mailslotConnect(SlotName);
 	printf("%d\n", mailslotWrite(hFile, "Hello", 7));
 
-	helloWorldOnRepeat();
 
 	return 0;
 }
@@ -34,6 +36,15 @@ int helloWorldOnRepeat()
 		if (i>0)
 			Sleep(1000);
 		printf("Hello World!\n");
+	}
+	return 0;
+}
+
+int helloMoonOnRepeat()
+{
+	while(1==1){
+		Sleep(200);
+		printf("Hello Moon\n");
 	}
 	return 0;
 }
