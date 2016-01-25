@@ -229,12 +229,6 @@ FakesAssemblies/
 # Visual Studio 6 build log
 *.plg
 
-# Visual Studio 6 workspace options file
-*.opt
-*.sln
-/IRC_Clone/IRC_Clone.phpproj
-/chat-server/chatserver.phpproj
-
 # Composer
 composer
 vendor/
