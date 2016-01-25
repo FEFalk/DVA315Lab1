@@ -12,7 +12,7 @@ DWORD threadId;
 HANDLE thread;
 
 
-DWORD threadCreate (LPTHREAD_START_ROUTINE threadFunc, LPVOID threadParams) {
+DWORD threadCreate(LPTHREAD_START_ROUTINE threadFunc, LPVOID threadParams) {
 
 	/* Creates a thread running threadFunc */
 	/* optional parameters (NULL otherwise)and returns its id! */
@@ -35,11 +35,11 @@ DWORD threadCreate (LPTHREAD_START_ROUTINE threadFunc, LPVOID threadParams) {
 
 	CloseHandle(thread);
 
-	return 0;
+	return threadId;
 }
 
 
-HANDLE mailslotCreate (char *name) {
+HANDLE mailslotCreate(char *name) {
 
 	/* Creates a mailslot with the specified name and returns the handle */
 	/* Should be able to handle a messages of any size */
@@ -62,7 +62,7 @@ HANDLE mailslotCreate (char *name) {
 	return newMailSlot;
 }
 
-HANDLE mailslotConnect (char * name) {
+HANDLE mailslotConnect(char * name) {
 
 	/* Connects to an existing mailslot for writing */
 	/* and returns the handle upon success     */
@@ -110,14 +110,14 @@ int mailslotWrite(HANDLE mailSlot, void *msg, int msgSize) {
 
 }
 
-int	mailslotRead (HANDLE mailbox, void *msg, int msgSize) {
+int	mailslotRead(HANDLE mailbox, void *msg, int msgSize) {
 
 	/* Read a msg from a mailslot, return nr */
 	/* of successful bytes read              */
 }
 
-int mailslotClose(HANDLE mailSlot){
-	
+int mailslotClose(HANDLE mailSlot) {
+
 	/* close a mailslot, returning whatever the service call returns */
 }
 
@@ -126,62 +126,62 @@ int mailslotClose(HANDLE mailSlot){
 /******************** DONT CHANGE!!! JUST FYI ******************************************************/
 
 
-HWND windowCreate (HINSTANCE hPI, HINSTANCE hI, int ncs, char *title, WNDPROC callbackFunc, int bgcolor) {
+HWND windowCreate(HINSTANCE hPI, HINSTANCE hI, int ncs, char *title, WNDPROC callbackFunc, int bgcolor) {
 
-  HWND hWnd;
-  WNDCLASS wc; 
+	HWND hWnd;
+	WNDCLASS wc;
 
-  /* initialize and create the presentation window        */
-  /* NOTE: The only important thing to you is that we     */
-  /*       associate the function 'MainWndProc' with this */
-  /*       window class. This function will be called by  */
-  /*       windows when something happens to the window.  */
-  if( !hPI) {
-	 wc.lpszClassName = "GenericAppClass";
-	 wc.lpfnWndProc = callbackFunc;          /* (this function is called when the window receives an event) */
-	 wc.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
-	 wc.hInstance = hI;
-	 wc.hIcon = LoadIcon( NULL, IDI_APPLICATION );
-	 wc.hCursor = LoadCursor( NULL, IDC_ARROW );
-	 wc.hbrBackground = (HBRUSH) bgcolor;
-	 wc.lpszMenuName = "GenericAppMenu";
+	/* initialize and create the presentation window        */
+	/* NOTE: The only important thing to you is that we     */
+	/*       associate the function 'MainWndProc' with this */
+	/*       window class. This function will be called by  */
+	/*       windows when something happens to the window.  */
+	if (!hPI) {
+		wc.lpszClassName = "GenericAppClass";
+		wc.lpfnWndProc = callbackFunc;          /* (this function is called when the window receives an event) */
+		wc.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
+		wc.hInstance = hI;
+		wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground = (HBRUSH)bgcolor;
+		wc.lpszMenuName = "GenericAppMenu";
 
-	 wc.cbClsExtra = 0;
-	 wc.cbWndExtra = 0;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
 
-	 RegisterClass( &wc );
-  }
+		RegisterClass(&wc);
+	}
 
-  /* NOTE: This creates a window instance. Don't bother about the    */
-  /*       parameters to this function. It is sufficient to know     */
-  /*       that this function creates a window in which we can draw. */
-  hWnd = CreateWindow( "GenericAppClass",
-				 title,
-				 WS_OVERLAPPEDWINDOW|WS_HSCROLL|WS_VSCROLL,
-				 0,
-				 0,
-				 CW_USEDEFAULT,
-				 CW_USEDEFAULT,
-				 NULL,
-				 NULL,
-				 hI,
-				 NULL
-				 );
+	/* NOTE: This creates a window instance. Don't bother about the    */
+	/*       parameters to this function. It is sufficient to know     */
+	/*       that this function creates a window in which we can draw. */
+	hWnd = CreateWindow("GenericAppClass",
+		title,
+		WS_OVERLAPPEDWINDOW | WS_HSCROLL | WS_VSCROLL,
+		0,
+		0,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		NULL,
+		NULL,
+		hI,
+		NULL
+		);
 
-  /* NOTE: This makes our window visible. */
-  ShowWindow( hWnd, ncs );
-  /* (window creation complete) */
+	/* NOTE: This makes our window visible. */
+	ShowWindow(hWnd, ncs);
+	/* (window creation complete) */
 
-  return hWnd;
+	return hWnd;
 }
 
-void windowRefreshTimer (HWND hWnd, int updateFreq) {
+void windowRefreshTimer(HWND hWnd, int updateFreq) {
 
-  if(SetTimer(hWnd, TIMERID, updateFreq, NULL) == 0) {
-	 /* NOTE: Example of how to use MessageBoxes, see the online help for details. */
-	 MessageBox(NULL, "Failed setting timer", "Error!!", MB_OK);
-	 exit (1);
-  }
+	if (SetTimer(hWnd, TIMERID, updateFreq, NULL) == 0) {
+		/* NOTE: Example of how to use MessageBoxes, see the online help for details. */
+		MessageBox(NULL, "Failed setting timer", "Error!!", MB_OK);
+		exit(1);
+	}
 }
 
 
@@ -194,32 +194,32 @@ HANDLE OpenFileDialog(char* string, DWORD accessMode, DWORD howToCreate)
 {
 
 	OPENFILENAME opf;
-	char szFileName[_MAX_PATH]="";
+	char szFileName[_MAX_PATH] = "";
 
-	opf.Flags				= OFN_SHOWHELP | OFN_OVERWRITEPROMPT; 
-	opf.lpstrDefExt			= "dat";
-	opf.lpstrCustomFilter	= NULL;
-	opf.lStructSize			= sizeof(OPENFILENAME);
-	opf.hwndOwner			= NULL;
-	opf.lpstrFilter			= NULL;
-	opf.lpstrFile			= szFileName;
-	opf.nMaxFile			= _MAX_PATH;
-	opf.nMaxFileTitle		= _MAX_FNAME;
-	opf.lpstrInitialDir		= NULL;
-	opf.lpstrTitle			= string;
-	opf.lpstrFileTitle		= NULL ; 
-	
-	if(accessMode == GENERIC_READ)
+	opf.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
+	opf.lpstrDefExt = "dat";
+	opf.lpstrCustomFilter = NULL;
+	opf.lStructSize = sizeof(OPENFILENAME);
+	opf.hwndOwner = NULL;
+	opf.lpstrFilter = NULL;
+	opf.lpstrFile = szFileName;
+	opf.nMaxFile = _MAX_PATH;
+	opf.nMaxFileTitle = _MAX_FNAME;
+	opf.lpstrInitialDir = NULL;
+	opf.lpstrTitle = string;
+	opf.lpstrFileTitle = NULL;
+
+	if (accessMode == GENERIC_READ)
 		GetOpenFileName(&opf);
 	else
 		GetSaveFileName(&opf);
 
-	return CreateFile(szFileName, 
-		accessMode, 
-		0, 
-		NULL, 
-		howToCreate, 
-		FILE_ATTRIBUTE_NORMAL, 
+	return CreateFile(szFileName,
+		accessMode,
+		0,
+		NULL,
+		howToCreate,
+		FILE_ATTRIBUTE_NORMAL,
 		NULL);
 
 

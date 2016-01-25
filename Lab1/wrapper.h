@@ -4,20 +4,20 @@
 #include<windows.h>
 // Wrappers for windowhandling
 
-extern HWND windowCreate (HINSTANCE hpI, HINSTANCE hI, int ncs, char *title, WNDPROC callbackFunc, int bgcolor);
+extern HWND windowCreate(HINSTANCE hpI, HINSTANCE hI, int ncs, char *title, WNDPROC callbackFunc, int bgcolor);
 
-extern void windowRefreshTimer (HWND hWnd, int updateFreq);
+extern void windowRefreshTimer(HWND hWnd, int updateFreq);
 
 // Mailslot handling:
-extern DWORD threadCreate (LPTHREAD_START_ROUTINE threadFunc, LPVOID threadParams);
+extern DWORD threadCreate(LPTHREAD_START_ROUTINE threadFunc, LPVOID threadParams);
 
-extern HANDLE mailslotCreate (char *name);
-extern HANDLE mailslotConnect (char * name);
+extern HANDLE mailslotCreate(char *name);
+extern HANDLE mailslotConnect(char * name);
 
-extern int mailslotWrite (HANDLE mailSlot, void * msg, int msgSize);
-extern int mailslotRead (HANDLE mailSlot, void * msg, int msgSize);
+extern int mailslotWrite(HANDLE mailSlot, void * msg, int msgSize);
+extern int mailslotRead(HANDLE mailSlot, void * msg, int msgSize);
 
-extern int mailslotClose (HANDLE mailSlot);
+extern int mailslotClose(HANDLE mailSlot);
 extern HANDLE OpenFileDialog(char* string, DWORD accessMode, DWORD howToCreate);
 
 
