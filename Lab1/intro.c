@@ -9,7 +9,7 @@ int helloMoonOnRepeat();
 int helloWorldOnRepeat();
 
 HANDLE helloSemaphore;
-
+CRITICAL_SECTION criticalSection;
 int main(void)
 {
 	LPTSTR SlotName = TEXT("\\\\.\\mailslot\\sample_mailslot");
@@ -23,13 +23,15 @@ int main(void)
 		return 1;
 
 	}
+	InitializeCriticalSection(&criticalSection);
 	HANDLE threads[MAX_THREADS] = {
 		threadCreate(helloWorldOnRepeat, NULL),
 		threadCreate(helloMoonOnRepeat, NULL)
 	};
 
 	WaitForMultipleObjects(MAX_THREADS, threads, TRUE, INFINITE);
-
+	DeleteCriticalSection(&criticalSection);
+	
 	CloseHandle(threads[0]);
 	CloseHandle(threads[1]);
 
@@ -52,26 +54,25 @@ int myFunction(int number)
 int helloWorldOnRepeat()
 {
 	while(1){
-		WaitForSingleObject(helloSemaphore, INFINITE);
+		EnterCriticalSection(&criticalSection);
 		for (int i = 0; i < 10; i++) {
 			Sleep(200);
 			printf("Hello World!\n");
-			if (i == 9)
-				ReleaseSemaphore(helloSemaphore, 1, NULL);
 		}
+		LeaveCriticalSection(&criticalSection);
+		Sleep(100);
 	}
 }
 
 int helloMoonOnRepeat()
 {
-	
 	while (1) {
-		WaitForSingleObject(helloSemaphore, INFINITE);
+		EnterCriticalSection(&criticalSection);
 		for (int i = 0; i < 10; i++) {
 			Sleep(200);
 			printf("Hello Moon!\n");
-			if (i == 9)
-				ReleaseSemaphore(helloSemaphore, 1, NULL);
 		}
+		LeaveCriticalSection(&criticalSection);
+		Sleep(100);
 	}
 }
