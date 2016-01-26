@@ -100,7 +100,7 @@ int mailslotWrite(HANDLE mailSlot, void *msg, int msgSize) {
 		return FALSE;
 	}
 
-	printf("Slot written to successfully.\n %d");
+	printf("Slot written to successfully.\n");
 
 	return cbWritten;
 
