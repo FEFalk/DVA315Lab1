@@ -6,40 +6,32 @@
 #define TIMERID			100  /* id for timer that is used by the thread that manages the window where graphics is drawn */
 #define DEFAULT_STACK_SIZE	1024
 #define TIME_OUT			MAILSLOT_WAIT_FOREVER 
-#define MAX_THREADS 3
+
 
 /* ATTENTION!!! calls that require a time out, use TIME_OUT constant, specifies that calls are blocked forever */
-DWORD threadsId[MAX_THREADS];
-HANDLE threads[MAX_THREADS];
+
 
 
 DWORD threadCreate(LPTHREAD_START_ROUTINE threadFunc, LPVOID threadParams) {
 
 	/* Creates a thread running threadFunc */
 	/* optional parameters (NULL otherwise)and returns its id! */
-	for (int i = 0; i < MAX_THREADS; i++){
-		threads[i] = CreateThread(
-			NULL,
-			DEFAULT_STACK_SIZE,
-			threadFunc,
-			threadParams,
-			0,
-			&threadsId[i]);
 
-		if (threads == NULL)
-		{
-			MessageBox(NULL, NULL, TEXT("Error"), MB_OK);
-			ExitProcess(3);
-		}
+	HANDLE thread = CreateThread(
+		NULL,
+		DEFAULT_STACK_SIZE,
+		threadFunc,
+		threadParams,
+		0,
+		NULL);
 
+	if (thread == NULL)
+	{
+		MessageBox(NULL, NULL, TEXT("Error"), MB_OK);
+		ExitProcess(3);
 	}
-
-	WaitForMultipleObjects(MAX_THREADS, threads, TRUE, INFINITE);
 	
-	for (int i = 0; i < MAX_THREADS; i++) {
-		CloseHandle(threads[i]);
-	}
-	return threadsId;
+	return (DWORD)thread;
 }
 
 
