@@ -110,11 +110,33 @@ int	mailslotRead(HANDLE mailbox, void *msg, int msgSize) {
 
 	/* Read a msg from a mailslot, return nr */
 	/* of successful bytes read              */
+
+	/* Read a msg from a mailslot, return nr */
+	/* of successful bytes read              */
+	DWORD nextSize, messages, cbRead;
+	BOOL fResult;
+
+	fResult = GetMailslotInfo(mailbox, (LPDWORD)NULL, &nextSize, &messages, (LPDWORD)NULL);
+	if (!fResult) {
+		printf("GetMailslotInfo Error: %d\n", GetLastError());
+		return 0;
+	}
+
+	*((char**)msg) = (char*)calloc(nextSize, sizeof(char));
+
+	fResult = ReadFile(mailbox, *((char**)msg), nextSize, &cbRead, (LPOVERLAPPED)NULL);
+	if (!fResult) {
+		printf("ReadFile Error: %d\n", GetLastError());
+		return 0;
+	}
+	return cbRead;
 }
 
 int mailslotClose(HANDLE mailSlot) {
 
 	/* close a mailslot, returning whatever the service call returns */
+
+	return CloseHandle(mailSlot);
 }
 
 

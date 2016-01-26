@@ -7,30 +7,44 @@
 int myFunction(int number);
 int helloMoonOnRepeat();
 int helloWorldOnRepeat();
+int outputLoop(LPVOID param);
+int inputLoop(LPVOID param);
 
-HANDLE helloSemaphore;
+
+LPTSTR SlotName = TEXT("\\\\.\\mailslot\\sample_mailslot");
+HANDLE semaphore;
 CRITICAL_SECTION criticalSection;
+
+typedef struct {
+	char message[256];
+} stringStruct;
+
 int main(void)
 {
-	LPTSTR SlotName = TEXT("\\\\.\\mailslot\\sample_mailslot");
-	HANDLE mailSlot;
-	HANDLE hFile;
-	
-	helloSemaphore = CreateSemaphore(NULL, 1, 1, NULL);
-	if (helloSemaphore == NULL)
+	//InitializeCriticalSection(&criticalSection);
+	//HANDLE threads[MAX_THREADS] = {
+	//	threadCreate(helloWorldOnRepeat, NULL),
+	//	threadCreate(helloMoonOnRepeat, NULL)
+	//};
+
+	//WaitForMultipleObjects(MAX_THREADS, threads, TRUE, INFINITE);
+	//DeleteCriticalSection(&criticalSection);
+
+	semaphore = CreateSemaphore(NULL, 0, 10, NULL);
+	if (semaphore == NULL)
 	{
 		printf("CreateSemaphore Error: %d\n", GetLastError());
 		return 1;
 
 	}
-	InitializeCriticalSection(&criticalSection);
+
 	HANDLE threads[MAX_THREADS] = {
-		threadCreate(helloWorldOnRepeat, NULL),
-		threadCreate(helloMoonOnRepeat, NULL)
+		threadCreate(inputLoop, NULL),
+		threadCreate(outputLoop, NULL)
 	};
 
+
 	WaitForMultipleObjects(MAX_THREADS, threads, TRUE, INFINITE);
-	DeleteCriticalSection(&criticalSection);
 	
 	CloseHandle(threads[0]);
 	CloseHandle(threads[1]);
@@ -75,4 +89,50 @@ int helloMoonOnRepeat()
 		LeaveCriticalSection(&criticalSection);
 		Sleep(100);
 	}
+}
+
+int outputLoop(LPVOID param) {
+	char *msg;
+	int read;
+	BOOL loop = TRUE;
+	HANDLE mail;
+
+	mail = mailslotCreate(SlotName);
+	ReleaseSemaphore(semaphore, 1, NULL); // Tell other thread the mailslot is created
+
+	while (loop) {
+		if (WaitForSingleObject(semaphore, INFINITE) == WAIT_OBJECT_0) { // Wait for messages
+			read = mailslotRead(mail, &msg, 0);
+			if (read != 0) {
+				printf("Read: %s\n", msg);
+				if (strcmp(msg, "END") == 0)
+					loop = FALSE;
+			}
+			free(msg);
+		}
+	}
+	mailslotClose(mail);
+	return 0;
+}
+
+int inputLoop(LPVOID param) {
+	WaitForSingleObject(semaphore, INFINITE); // Wait for mailslot to be created
+	HANDLE mail = mailslotConnect(SlotName);
+	char *read = calloc(256, sizeof(char));
+	BOOL loop = TRUE;
+
+	while (loop) {
+		fgets(read, 255, stdin);
+		if (strlen(read) > 1)
+			read[strlen(read) - 1] = '\0';
+		stringStruct input;
+		strncpy(input.message, read, strlen(read) + 1);
+		mailslotWrite(mail, &input, sizeof(input));
+		ReleaseSemaphore(semaphore, 1, NULL); // Tell the other thread there are new messages!
+		if (strcmp(read, "END") == 0)
+			loop = FALSE;
+	}
+	free(read);
+	mailslotClose(mail);
+	return 0;
 }
